@@ -1,0 +1,8 @@
+{
+    "ssh_root_login": "no",
+    "ssh_password_authentication": "no",
+    "firewall_enabled": true,
+    "auto_updates_enabled": true,
+    "file_permissions": "640",
+    "backup_enabled": true
+}

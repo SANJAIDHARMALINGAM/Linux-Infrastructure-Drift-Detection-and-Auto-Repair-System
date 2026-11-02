@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linux Infrastructure Drift Detection & Auto Repair Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <div class="brand-title">
+          <span class="brand-name">DriftGuard</span>
+          <span class="brand-subtitle">Linux Infrastructure</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Core Operations</div>
+        <a class="nav-item active" data-tab="overview">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></span>
+          <span class="nav-text">Overview</span>
+        </a>
+        <a class="nav-item" data-tab="configuration">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg></span>
+          <span class="nav-text">Configuration</span>
+        </a>
+        <a class="nav-item" data-tab="drift">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></span>
+          <span class="nav-text">Drift Detection</span>
+        </a>
+        <a class="nav-item" data-tab="repair">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg></span>
+          <span class="nav-text">Auto Repair</span>
+        </a>
+
+        <div class="nav-label">History & Audit</div>
+        <a class="nav-item" data-tab="backups">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></span>
+          <span class="nav-text">Backups</span>
+        </a>
+        <a class="nav-item" data-tab="reports">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></span>
+          <span class="nav-text">Reports</span>
+        </a>
+        <a class="nav-item" data-tab="logs">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></span>
+          <span class="nav-text">Audit Logs</span>
+        </a>
+
+        <div class="nav-label">Documentation</div>
+        <a class="nav-item" data-tab="about">
+          <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span>
+          <span class="nav-text">About Project</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="api-badge">
+          <span class="api-dot"></span>
+          <span>REST API: 127.0.0.1:5000</span>
+        </div>
+        <div style="font-size: 0.72rem; color: #64748b;">CLI & Web Unified Service</div>
+      </div>
+    </aside>
+
+    <!-- Main Container -->
+    <div class="main-wrapper">
+      <!-- Top Notice Banner -->
+      <div class="env-disclaimer-banner">
+        <div>
+          <span class="env-tag">TEST ENVIRONMENT</span>
+          <span>Operating on designated test JSON files (<code>baseline.json</code> &amp; <code>current_config.json</code>). Live Linux system files are untouched.</span>
+        </div>
+        <div style="font-size: 0.74rem; color: #94a3b8;">Prototype Demonstration Model</div>
+      </div>
+
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="header-title-area">
+          <h1 class="page-title" id="pageTitle">System Overview</h1>
+        </div>
+        <div class="header-actions">
+          <div class="status-indicator-badge compliant" id="systemStatusBadge">
+            <span class="pulse-dot"></span>
+            <span id="systemStatusText">SYSTEM COMPLIANT</span>
+          </div>
+          <button class="btn btn-outline btn-sm" id="themeToggleBtn" title="Toggle Light / Dark Mode">
+            <svg id="themeIcon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <span id="themeToggleText">Light</span>
+          </button>
+          <button class="btn btn-outline btn-sm" id="globalRefreshBtn" title="Refresh Live Data">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Views -->
+      <main class="content-area">
+
+        <!-- ================================================================
+             1. OVERVIEW VIEW
+             ================================================================ -->
+        <section class="view-section active" id="view-overview">
+          <!-- Metrics Row -->
+          <div class="metrics-grid">
+            <div class="metric-card accent-green">
+              <div class="metric-header">
+                <span class="metric-title">Compliance Status</span>
+                <div class="metric-icon-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+              </div>
+              <div class="metric-value" id="metricCompliance">--</div>
+              <div class="metric-subtext">Golden Baseline Verification</div>
+            </div>
+
+            <div class="metric-card accent-red">
+              <div class="metric-header">
+                <span class="metric-title">Configuration Drift</span>
+                <div class="metric-icon-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+              </div>
+              <div class="metric-value" id="metricDriftCount">0</div>
+              <div class="metric-subtext">Mismatches against baseline</div>
+            </div>
+
+            <div class="metric-card accent-blue">
+              <div class="metric-header">
+                <span class="metric-title">Monitored Keys</span>
+                <div class="metric-icon-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+              </div>
+              <div class="metric-value" id="metricMonitoredKeys">6</div>
+              <div class="metric-subtext">Security parameters tracked</div>
+            </div>
+
+            <div class="metric-card accent-amber">
+              <div class="metric-header">
+                <span class="metric-title">Backups &amp; Reports</span>
+                <div class="metric-icon-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
+              </div>
+              <div class="metric-value">
+                <span id="metricBackupsCount">0</span> / <span id="metricReportsCount">0</span>
+              </div>
+              <div class="metric-subtext">Backups / Reports saved</div>
+            </div>
+          </div>
+
+          <!-- Chart & Quick Actions Row -->
+          <div class="two-col-grid">
+            <!-- Compliance Visualization -->
+            <div class="content-card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 1 10 10"></path></svg>
+                  Compliance Ratio
+                </h3>
+              </div>
+              <div class="card-body">
+                <div class="chart-container">
+                  <canvas id="complianceDoughnutCanvas" width="180" height="180"></canvas>
+                  <div class="chart-center-label">
+                    <div class="chart-percentage" id="chartPercentageText">100%</div>
+                    <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Compliant</div>
+                  </div>
+                  <div class="chart-legend">
+                    <div class="legend-item">
+                      <span class="legend-color" style="background-color: var(--success);"></span>
+                      <span>Compliant: <strong id="legendCompliantCount">6</strong></span>
+                    </div>
+                    <div class="legend-item">
+                      <span class="legend-color" style="background-color: var(--danger);"></span>
+                      <span>Drifted: <strong id="legendDriftedCount">0</strong></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Action Center -->
+            <div class="content-card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                  Quick Action Center
+                </h3>
+              </div>
+              <div class="card-body" style="display:flex; flex-direction:column; gap:16px;">
+                <div>
+                  <label style="font-size:0.84rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">1. Trigger Live Drift Scan</label>
+                  <button class="btn btn-primary" id="overviewDetectBtn" style="width:100%;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span>Run Drift Scan Now</span>
+                  </button>
+                </div>
+
+                <div style="border-top:1px solid var(--card-border); padding-top:14px;">
+                  <label style="font-size:0.84rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">2. Simulate Configuration Drift</label>
+                  <div style="display:flex; gap:10px;">
+                    <select class="form-select" id="overviewSimulateSelect" style="flex:1;">
+                      <option value="1">1. Enable SSH root login</option>
+                      <option value="2">2. Enable SSH password authentication</option>
+                      <option value="3">3. Disable firewall</option>
+                      <option value="4">4. Disable automatic updates</option>
+                      <option value="5">5. Change file permissions (777)</option>
+                      <option value="6">6. Disable backups</option>
+                      <option value="7">7. Apply all test changes</option>
+                    </select>
+                    <button class="btn btn-outline" id="overviewSimulateBtn">Simulate</button>
+                  </div>
+                </div>
+
+                <div style="border-top:1px solid var(--card-border); padding-top:14px;">
+                  <label style="font-size:0.84rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">3. Automated Remediation</label>
+                  <a href="#repair" class="btn btn-danger" style="width:100%; text-decoration:none;" onclick="App.switchTab('repair')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                    <span>Proceed to Auto Repair Workflow</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuration Glance & Recent Activity Row -->
+          <div class="two-col-grid">
+            <!-- Configuration Quick Glance -->
+            <div class="content-card">
+              <div class="card-header">
+                <h3 class="card-title">Baseline vs Current Configuration</h3>
+                <a href="#configuration" class="btn btn-outline btn-sm" onclick="App.switchTab('configuration')">View Full</a>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Key</th>
+                      <th>Expected</th>
+                      <th>Actual</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="overviewConfigTableBody">
+                    <tr><td colspan="4" class="empty-state">Loading configuration...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="content-card">
+              <div class="card-header">
+                <h3 class="card-title">Recent Audit Events</h3>
+                <a href="#logs" class="btn btn-outline btn-sm" onclick="App.switchTab('logs')">All Logs</a>
+              </div>
+              <div class="table-responsive">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>Event</th>
+                    </tr>
+                  </thead>
+                  <tbody id="overviewLogsTableBody">
+                    <tr><td colspan="2" class="empty-state">Loading recent activity...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             2. CONFIGURATION VIEW
+             ================================================================ -->
+        <section class="view-section" id="view-configuration">
+          <div class="content-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Tracked Security Parameters</h3>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                  Side-by-side comparison between approved <code>baseline.json</code> and monitored <code>current_config.json</code>.
+                </div>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <select class="form-select" id="configSimulateSelect">
+                  <option value="1">1. SSH Root Login -> yes</option>
+                  <option value="2">2. SSH Password Auth -> yes</option>
+                  <option value="3">3. Firewall -> disabled</option>
+                  <option value="4">4. Auto Updates -> disabled</option>
+                  <option value="5">5. Permissions -> 777</option>
+                  <option value="6">6. Backups -> disabled</option>
+                  <option value="7">7. Apply All Test Changes</option>
+                </select>
+                <button class="btn btn-outline btn-sm" id="configSimulateBtn">Inject Drift Scenario</button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Security Setting</th>
+                    <th>Expected Value (Baseline)</th>
+                    <th>Current Value (Monitored)</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="configTableBody">
+                  <tr><td colspan="4" class="empty-state">Loading configuration parameters...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             3. DRIFT DETECTION VIEW
+             ================================================================ -->
+        <section class="view-section" id="view-drift">
+          <div class="content-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Drift Detection Scanner</h3>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                  Last scanned: <span id="driftLastScanTime" style="font-weight:600;">--</span>
+                </div>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button class="btn btn-primary" id="driftScanBtn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <span>Run Drift Scan</span>
+                </button>
+                <button class="btn btn-danger" id="driftGoRepairBtn" style="display:none;">
+                  <span>Remediate Drift &rarr;</span>
+                </button>
+              </div>
+            </div>
+            <div class="card-body" style="padding-bottom:10px;">
+              <div id="driftStatusAlert">
+                <!-- Status alert injected via JS -->
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Setting</th>
+                    <th>Expected (Baseline)</th>
+                    <th>Actual (Drifted)</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="driftTableBody">
+                  <tr><td colspan="4" class="empty-state">No drift scan run yet. Click 'Run Drift Scan' to begin.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             4. AUTO REPAIR VIEW
+             ================================================================ -->
+        <section class="view-section" id="view-repair">
+          <div class="content-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Automated Configuration Repair</h3>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                  Remediates detected discrepancies by safely restoring golden baseline values.
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="repairStatusCard" style="margin-bottom: 20px;">
+                <!-- Status injected via JS -->
+              </div>
+
+              <div class="alert-box alert-info" style="margin-bottom: 20px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <div>
+                  <strong>Pre-Repair Safety Guarantee</strong>
+                  <div>Prior to modifying <code>current_config.json</code>, the system creates a timestamped backup in <code>backups/</code> to ensure zero data loss. After applying changes, an immediate verification scan confirms compliant status.</div>
+                </div>
+              </div>
+
+              <h4 style="font-size:0.95rem; margin-bottom:12px; color:var(--text-main);">Repair Preview</h4>
+              <div class="table-responsive" style="margin-bottom: 20px; border: 1px solid var(--card-border); border-radius: var(--radius-sm);">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>Setting Key</th>
+                      <th>Current Drifted Value</th>
+                      <th>Proposed Restored Value</th>
+                    </tr>
+                  </thead>
+                  <tbody id="repairPreviewTableBody">
+                    <tr><td colspan="3" class="empty-state">No settings require repair</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); padding: 18px 22px; border-radius: var(--radius-sm); margin-bottom: 24px;">
+                <label style="display:flex; align-items:center; gap:12px; cursor:pointer; font-size:0.92rem; font-weight:500; color:var(--text-primary);">
+                  <input type="checkbox" id="repairConfirmCheckbox" style="width:19px; height:19px; accent-color: var(--apple-blue); cursor:pointer;">
+                  <span>I understand and explicitly confirm applying automated repairs to the test configuration.</span>
+                </label>
+              </div>
+
+              <button class="btn btn-danger btn-lg" id="executeRepairBtn" disabled style="width:100%;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                <span>Execute Auto Repair</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Repair Result Panel -->
+          <div class="content-card" id="repairResultCard" style="display:none;">
+            <div class="card-header">
+              <h3 class="card-title">Repair Execution &amp; Verification Outcome</h3>
+            </div>
+            <div class="card-body" id="repairResultBody">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             5. BACKUPS VIEW
+             ================================================================ -->
+        <section class="view-section" id="view-backups">
+          <div class="content-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Configuration Backups</h3>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                  Automatic snapshots generated before each remediation in <code>backups/</code>.
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Backup Filename</th>
+                    <th>Created Timestamp</th>
+                    <th>File Size</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="backupsTableBody">
+                  <tr><td colspan="4" class="empty-state">Loading backups...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             6. REPORTS VIEW
+             ================================================================ -->
+        <section class="view-section" id="view-reports">
+          <div class="content-card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Compliance Reports Archive</h3>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                  Structured JSON drift and repair audit records saved in <code>reports/</code>.
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Report File</th>
+                    <th>Created Date</th>
+                    <th>Status</th>
+                    <th>Issues Found</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="reportsTableBody">
+                  <tr><td colspan="5" class="empty-state">Loading reports...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             7. AUDIT LOGS VIEW
+             ================================================================ -->
+        <section class="view-section" id="view-logs">
+          <div class="content-card">
+            <div class="card-header">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <h3 class="card-title">Audit Trail</h3>
+                <span class="badge badge-neutral" id="logsCountBadge">0 entries</span>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <input type="text" class="form-input" id="logSearchInput" placeholder="Filter audit events..." style="width:240px;">
+                <button class="btn btn-outline btn-sm" id="refreshLogsBtn">Refresh</button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Event Details</th>
+                  </tr>
+                </thead>
+                <tbody id="logsTableBody">
+                  <tr><td colspan="2" class="empty-state">Loading audit logs...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             8. ABOUT VIEW
+             ================================================================ -->
+        <section class="view-section" id="view-about">
+          <div class="content-card">
+            <div class="card-header">
+              <h3 class="card-title">Project Architecture &amp; Scope</h3>
+            </div>
+            <div class="card-body" style="line-height:1.65; font-size:0.94rem; color:var(--text-secondary);">
+              <h4 style="color:var(--text-primary); font-size:1.15rem; font-weight:600; margin-bottom:10px;">Linux Infrastructure Drift Detection &amp; Auto Repair System</h4>
+              <p style="margin-bottom:16px;">
+                This project provides an automated configuration compliance monitoring and remediation workflow. It establishes an approved baseline reference, detects unintentional or unauthorized drift in monitored settings, enables controlled simulation of configuration changes, safely repairs drifted settings back to baseline values, and maintains a timestamped audit trail.
+              </p>
+
+              <div class="alert-box alert-warning">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                <div>
+                  <strong>Test Environment Operational Scope</strong>
+                  <div>
+                    This prototype operates strictly on designated JSON configuration files (<code>baseline.json</code> and <code>current_config.json</code>).
+                    It is an educational prototype and does not directly alter live Linux OS system configurations (such as <code>/etc/ssh/sshd_config</code>, <code>ufw</code> firewall rules, or live system file permissions).
+                  </div>
+                </div>
+              </div>
+
+              <h4 style="color:var(--text-primary); font-size:1.1rem; font-weight:600; margin-top:24px; margin-bottom:10px;">Unified System Architecture</h4>
+              <p style="margin-bottom:16px;">
+                Both the interactive terminal CLI (<code>drift_detector.py</code>) and this Flask web dashboard share the exact same underlying service module (<code>core/drift_service.py</code>). Neither transport layer duplicates comparison or repair algorithms.
+              </p>
+
+              <h4 style="color:var(--text-primary); font-size:1.1rem; font-weight:600; margin-top:24px; margin-bottom:10px;">Supported REST API Endpoints</h4>
+              <ul style="margin-left:22px; margin-bottom:18px; line-height:1.7;">
+                <li><code>GET /api/health</code> &mdash; Service health and status check</li>
+                <li><code>GET /api/dashboard</code> &mdash; Real-time system metrics, compliance status, and drift count</li>
+                <li><code>GET /api/configuration</code> &mdash; Baseline vs current configuration comparison</li>
+                <li><code>GET /api/drift</code> &mdash; Active drift issues calculation</li>
+                <li><code>POST /api/drift/detect</code> &mdash; Trigger drift scan and generate report</li>
+                <li><code>POST /api/drift/simulate</code> &mdash; Safely simulate drift in test configuration</li>
+                <li><code>POST /api/repair</code> &mdash; Auto-repair with mandatory pre-backup and verification</li>
+                <li><code>GET /api/logs</code> &mdash; Audit trail records</li>
+                <li><code>GET /api/reports</code> &mdash; Historical JSON reports</li>
+                <li><code>GET /api/backups</code> &mdash; List of saved backups</li>
+                <li><code>POST /api/backups/restore</code> &mdash; Verified restore from backup</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Restore Confirmation Modal -->
+  <div class="modal-overlay" id="restoreModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Restore Configuration Snapshot</h3>
+        <button class="modal-close" id="cancelRestoreBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="alert-box alert-warning">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          <div>
+            <strong>Confirm Snapshot Restoration</strong>
+            <div>Restoring this snapshot will overwrite <code>current_config.json</code> with the backup state. A safety backup of the current state will be taken automatically.</div>
+          </div>
+        </div>
+        <p style="margin-bottom:16px;">
+          Selected Backup: <strong id="restoreModalFile" style="font-family:monospace;">--</strong>
+        </p>
+        <label style="display:flex; align-items:center; gap:8px; font-size:0.88rem; cursor:pointer;">
+          <input type="checkbox" id="restoreConfirmCheckbox">
+          <span>I confirm restoring this configuration backup.</span>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="App.switchTab('backups'); document.getElementById('restoreModal').classList.remove('active');">Cancel</button>
+        <button class="btn btn-danger" id="confirmRestoreBtn" disabled>Restore Configuration</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report JSON Viewer Modal -->
+  <div class="modal-overlay" id="reportModal">
+    <div class="modal-content" style="max-width:700px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="reportModalTitle">Report Details</h3>
+        <button class="modal-close" id="closeReportModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <pre class="json-viewer" id="reportModalJson"></pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="document.getElementById('reportModal').classList.remove('active');">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
